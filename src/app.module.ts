@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserController } from './store/user.controller.js';
-import { UserProvider } from './store/user.service.js';
+import { UserController } from './user/user.controller.js';
+import { UserService } from './user/user.service.js';
+import { User } from './user/user.entity.js';
+import 'dotenv/config.js';
 
 @Module({
   imports: [
@@ -12,14 +14,16 @@ import { UserProvider } from './store/user.service.js';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [],
+      entities: [User],
+      synchronize: true,
       maxQueryExecutionTime: 1000,
       retryAttempts: 3,
       retryDelay: 3000,
       poolSize: 10,
     }),
+    TypeOrmModule.forFeature([User])
   ],
   controllers: [UserController],
-  providers: [UserProvider],
+  providers: [UserService],
 })
 export class AppModule {}
