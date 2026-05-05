@@ -17,7 +17,7 @@ export class UserService {
         if (await this.userRepository.findOne({ where: { username: user.username } })) {
             throw new HttpException('Username already exists', 400);
         }
-        
+
         if (!user.password || user.password.length < 6) {
             throw new HttpException('Password must be at least 6 characters long', 400);
         }
@@ -47,4 +47,47 @@ export class UserService {
         return { message: "User authenticated successfully", token };
     }
 
+    async updateUser(uuid: string, data: any) {
+        const alterations = {};
+        const messageAlterations: string[] = [];
+
+        const user = await this.userRepository.findOne({ where: { uuid } });
+        if (!user) {
+            throw new HttpException('User not found', 404);
+        }
+
+        if (data.username) {
+            alterations['username'] = data.username;
+            messageAlterations.push('username');
+        }
+
+        if (data.email) {
+            alterations['email'] = data.email;
+            messageAlterations.push('email');
+        }
+
+        if (data.password) {
+            if (data.password.length < 6) {
+                throw new HttpException('Password must be at least 6 characters long', 400);
+            }
+            alterations['password'] = await bcrypt.hash(data.password, 10);
+            messageAlterations.push('password');
+        }
+
+        if (data.image) {
+            alterations['image'] = data.image;
+            messageAlterations.push('image');
+        }
+
+        if (messageAlterations.length === 0) {
+            throw new HttpException('No valid fields to update', 400);
+        }
+
+        await this.userRepository.update({ uuid }, alterations);
+
+        return {
+            message: "User updated successfully",
+            updatedFields: messageAlterations
+        };
+    }
 }
