@@ -20,4 +20,17 @@ export class UserController {
         const response = await this.userService.createUser(body);
         return response;
     }
+
+    @Post('/users/login')
+    async getUser(@Body() body: any) {
+        if (!body.email || !body.password) {
+            throw new HttpException(
+                'Missing required fields: email, password',
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
+        const user = await this.userService.getUser(body);
+        return user;
+    }
 }
