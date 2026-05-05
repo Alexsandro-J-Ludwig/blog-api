@@ -3,7 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './user/user.controller.js';
 import { UserService } from './user/user.service.js';
 import { User } from './user/user.entity.js';
+import { UserModule } from './user/user.module.js';
 import 'dotenv/config.js';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -21,9 +23,10 @@ import 'dotenv/config.js';
       retryDelay: 3000,
       poolSize: 10,
     }),
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User]),
+    UserModule
   ],
-  controllers: [UserController],
-  providers: [UserService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
