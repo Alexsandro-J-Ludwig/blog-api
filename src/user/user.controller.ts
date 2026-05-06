@@ -1,5 +1,6 @@
-import { Body, Controller, HttpException, HttpStatus, Post } from "@nestjs/common";
+import { Body, Controller, HttpException, HttpStatus, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service.js";
+import { AuthGuard } from "./auth.guard.js";
 
 @Controller('')
 export class UserController {
@@ -32,5 +33,14 @@ export class UserController {
 
         const user = await this.userService.getUser(body);
         return user;
+    }
+
+    @UseGuards(AuthGuard)
+    @Put('/users/update')
+    async updateUser(@Body() data: any, @Req() req: any) {
+        const uuid = req.user.id;
+
+        const response = await this.userService.updateUser(uuid, data);
+        return response;
     }
 }
