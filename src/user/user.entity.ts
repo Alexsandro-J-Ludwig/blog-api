@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Post } from 'src/post/post.entity.js';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   uuid: string; 
@@ -16,4 +17,7 @@ export class User {
 
   @Column({ default: "https://thumbs.dreamstime.com/b/default-avatar-profile-flat-icon-social-media-user-vector-portrait-unknown-human-image-default-avatar-profile-flat-icon-184330869.jpg" })
   image: string;
+
+  @OneToMany(() => Post, (posts) => posts.owner)
+  posts: Post;
 }
