@@ -90,4 +90,16 @@ export class UserService {
             updatedFields: messageAlterations
         };
     }
+
+    async deleteUser(uuid: string) {
+        const userCheck = await this.userRepository.findOne({ where: { uuid }});
+
+        if (!userCheck) {
+            throw new HttpException("User not found", 404);
+        }
+
+        await this.userRepository.delete({uuid});
+
+        return { menssage: "User deleted with sucessful"};
+    }
 }
