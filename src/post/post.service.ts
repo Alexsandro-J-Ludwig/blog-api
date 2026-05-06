@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Post } from "./post.entity.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -11,13 +11,39 @@ export class PostService {
         private readonly postRepository: Repository<Post>
     ) { }
 
-    async createPost(data: PostDTO, uuid) {
-        const request = await this.postRepository.create({...data, uuid})
+    async createPost(data: PostDTO, userUuid: string) {
+        try {
+            const newPost = this.postRepository.create({
+                ...data,
+                owner: { uuid: userUuid }
+            });
 
-        if (!request) {
-            throw new HttpException("Cannot possible create post now, try later", 500);
+            await this.postRepository.save(newPost);
+
+            return { message: "Post created successfully" };
+        } catch (error) {
+            throw new HttpException(
+                "Could not create post, please try again later", 
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
+    }
 
-        return { message: "Post create sucessful" };
+    async getPostByUser(uuid: string) {
+        const posts = await this.postRepository.find({
+            where: {
+                owner: { uuid: uuid }
+            },
+            relations: ['owner'],
+            order: {
+                date: 'DESC'
+            }
+        });
+
+        if (!posts || posts.length === 0) {
+            throw new HttpException("Cannot find any post for this user", 404);
+        }
+        
+        return posts;
     }
 }

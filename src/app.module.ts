@@ -6,6 +6,7 @@ import { User } from './user/user.entity.js';
 import { UserModule } from './user/user.module.js';
 import 'dotenv/config.js';
 import { JwtModule } from '@nestjs/jwt';
+import { PostModule } from './post/post.module.js';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { JwtModule } from '@nestjs/jwt';
       poolSize: 10,
     }),
     TypeOrmModule.forFeature([User]),
-    UserModule
+    UserModule,
+    PostModule
   ],
   controllers: [],
   providers: [],
