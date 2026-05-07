@@ -47,4 +47,13 @@ export class PostController {
         const response = await this.postService.updatePost(body, uuidPost, uuid);
         return response;
     }
+
+    @UseGuards(AuthGuard)
+    @Post('/:postUuid/like')
+    async likePost(@Param('postUuid') postUuid: any, @Req() req: any) {
+        const uuid = req.user.uuid;
+
+        const response = await this.postService.likePost(postUuid, uuid);
+        return response;
+    }
 }

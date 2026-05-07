@@ -126,4 +126,26 @@ export class PostService {
         await this.postRepository.update({ uuid: uuidPost }, updateFields);
         return { message: "Fields updated with sucessful" };
     }
+
+    async likePost(uuidPost: string, uuidUser: string) {
+        const post = await this.postRepository.findOne({
+            where: { uuid: uuidPost },
+            relations: ['likedBy']
+        });
+
+        if (!post) {
+            throw new HttpException("Post not found", HttpStatus.NOT_FOUND);
+        }
+        const alreadyLiked = post.likedBy.some(user => user.uuid === uuidUser);
+
+        if (alreadyLiked) {
+            post.likedBy = post.likedBy.filter(user => user.uuid !== uuidUser);
+            post.likes--;
+        } else {
+            post.likedBy.push({ uuid: uuidUser } as User);
+            post.likes++;
+        }
+
+        return await this.postRepository.save(post);
+    }
 }
