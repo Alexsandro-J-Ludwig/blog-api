@@ -46,4 +46,23 @@ export class PostService {
         
         return posts;
     }
+
+    async getAllPosts() {
+  try {
+    const posts = await this.postRepository.find({
+      order: {
+        date: "DESC"
+      },
+      relations: ['owner']
+    });
+
+    return posts;
+
+  } catch (error) {
+    throw new HttpException(
+      "The platform is experiencing instabilities. Please try again later.",
+      HttpStatus.INTERNAL_SERVER_ERROR
+    );
+  }
+}
 }

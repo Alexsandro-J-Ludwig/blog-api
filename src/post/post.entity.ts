@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
 import { User } from 'src/user/user.entity.js';
 
 @Entity('posts')
@@ -13,7 +13,7 @@ export class Post {
   describe: string;
 
   @Column({ type: 'image'})
-  image: File;
+  image: string;
 
   @ManyToOne(() => User, (user) => user.posts)
   owner: User;
@@ -23,4 +23,8 @@ export class Post {
 
   @Column({ type: 'int', default: 0 })
   likes: number; 
+
+  @ManyToMany(() => User)
+  @JoinTable({ name: 'post_likes'})
+  likedBy: User[];
 }
