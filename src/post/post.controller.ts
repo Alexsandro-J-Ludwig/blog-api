@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
 import { PostService } from "./post.service.js";
 import { AuthGuard } from "src/user/auth.guard.js";
 import { PostDTO } from "./Post.dto.js";
@@ -31,5 +31,11 @@ export class PostController{
     async getAll() {
         const response = await this.postService.getAllPosts();
         return response
+    }
+
+    @Get("/postUser:username")
+    async getPostUser(@Param('username') username: string) {
+        const response = await this.postService.getPostByUser(username);
+        return response;
     }
 }
