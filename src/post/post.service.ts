@@ -148,4 +148,18 @@ export class PostService {
 
         return await this.postRepository.save(post);
     }
+
+    async deletePost(uuidPost: string) {
+        const checkPost = await this.postRepository.findOne({ where: { uuid: uuidPost } })
+
+        if (!checkPost) {
+            throw new HttpException(
+                "Post not found",
+                HttpStatus.NOT_FOUND
+            )
+        }
+
+        await this.postRepository.delete({ uuid: uuidPost });
+        return { message: "Post deleted with sucessful" };
+    }
 }

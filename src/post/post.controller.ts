@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { PostService } from "./post.service.js";
 import { AuthGuard } from "src/user/auth.guard.js";
 import { PostDTO } from "./Post.dto.js";
@@ -50,10 +50,17 @@ export class PostController {
 
     @UseGuards(AuthGuard)
     @Post('/:postUuid/like')
-    async likePost(@Param('postUuid') postUuid: any, @Req() req: any) {
+    async likePost(@Param('postUuid') postUuid: string, @Req() req: any) {
         const uuid = req.user.uuid;
 
         const response = await this.postService.likePost(postUuid, uuid);
+        return response;
+    }
+
+    @UseGuards(AuthGuard)
+    @Delete('/:postUuid')
+    async deletePost(@Param('postUuid') postUuid: string) {
+        const response = await this.postService.deletePost(postUuid);
         return response;
     }
 }
