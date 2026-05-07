@@ -26,4 +26,10 @@ export class PostController{
         const response = await this.postService.getPostByUser(uuid);
         return response;
     }
+
+    @Get("/getAll")
+    async getAll() {
+        const response = await this.postService.getAllPosts();
+        return response
+    }
 }
