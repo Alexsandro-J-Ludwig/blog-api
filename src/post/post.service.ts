@@ -92,4 +92,38 @@ export class PostService {
 
         return posts;
     }
+
+    async updatePost(data: any, uuidPost: string, uuid: string) {
+        const post = await this.postRepository.findOne({ where: { uuid: uuidPost } });
+
+        if (!post) {
+            throw new HttpException(
+                "Post not find",
+                HttpStatus.NOT_FOUND
+            )
+        }
+
+        let updateFields = {};
+        let fildsUpdate: number[] = []
+
+        if (data.title) {
+            updateFields["title"] = data.title
+            fildsUpdate.push(1);
+        }
+        if (data.describe) {
+            updateFields["describe"] = data.describe
+            fildsUpdate.push(2);
+        }
+        if (data.image) {
+            updateFields["image"] = data.image
+            fildsUpdate.push(3);
+        }
+
+        if (fildsUpdate.length === 0) {
+            return { message: "Any fields updated" }
+        }
+
+        await this.postRepository.update({ uuid: uuidPost }, updateFields);
+        return { message: "Fields updated with sucessful" };
+    }
 }

@@ -1,16 +1,16 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { PostService } from "./post.service.js";
 import { AuthGuard } from "src/user/auth.guard.js";
 import { PostDTO } from "./Post.dto.js";
 
 @Controller('post')
-export class PostController{
+export class PostController {
     provider: PostService;
-    constructor(private readonly postService: PostService){}
+    constructor(private readonly postService: PostService) { }
 
     @UseGuards(AuthGuard)
     @Post("/create")
-    async createPost(@Body() postDto: PostDTO, @Req() req: any){
+    async createPost(@Body() postDto: PostDTO, @Req() req: any) {
         const uuid = req.user.uuid;
 
         const response = await this.postService.createPost(postDto, uuid);
@@ -36,6 +36,15 @@ export class PostController{
     @Get("/postUser:username")
     async getPostUser(@Param('username') username: string) {
         const response = await this.postService.getPostByUser(username);
+        return response;
+    }
+
+    @UseGuards(AuthGuard)
+    @Put("/alterPost:uuidPost")
+    async updatePost(@Body() body: any, @Param('uuidPost') uuidPost: any, @Req() req: any) {
+        const uuid = req.user.uuid;
+
+        const response = await this.postService.updatePost(body, uuidPost, uuid);
         return response;
     }
 }
