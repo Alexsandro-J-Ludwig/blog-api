@@ -45,7 +45,7 @@ export class PostController {
 
   @Get('/postUser:username')
   async getPostUser(@Param('username') username: string) {
-    const response = await this.postService.getPostByUser(username);
+    const response = await this.postService.getByUsername(username);
     return response;
   }
 
