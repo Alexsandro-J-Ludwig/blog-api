@@ -1,10 +1,11 @@
-import { Post } from 'src/post/post.entity.js';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import type { Relation } from 'typeorm';
+import { Post } from '../post/post.entity.js';
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  uuid: string; 
+  uuid: string;
 
   @Column({ unique: true })
   username: string;
@@ -12,12 +13,15 @@ export class User {
   @Column({ unique: true })
   email: string;
 
-  @Column({  })
+  @Column()
   password: string;
 
-  @Column({ default: "https://thumbs.dreamstime.com/b/default-avatar-profile-flat-icon-social-media-user-vector-portrait-unknown-human-image-default-avatar-profile-flat-icon-184330869.jpg" })
+  @Column({
+    default:
+      'https://thumbs.dreamstime.com/b/default-avatar-profile-flat-icon-social-media-user-vector-portrait-unknown-human-image-default-avatar-profile-flat-icon-184330869.jpg',
+  })
   image: string;
 
-  @OneToMany(() => Post, (posts) => posts.owner)
-  posts: Post;
+  @OneToMany(() => Post, (post) => post.owner)
+  posts: Relation<Post[]>;
 }

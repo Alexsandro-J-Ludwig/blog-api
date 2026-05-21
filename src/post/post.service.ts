@@ -3,13 +3,14 @@ import { Post } from "./post.entity.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { PostDTO } from "./Post.dto.js";
-import { User } from "src/user/user.entity.js";
+import { User } from "../user/user.entity.js";
 
 @Injectable()
 export class PostService {
     constructor(
         @InjectRepository(Post)
         private readonly postRepository: Repository<Post>,
+        @InjectRepository(User)
         private readonly userRepository: Repository<User>
     ) { }
 
