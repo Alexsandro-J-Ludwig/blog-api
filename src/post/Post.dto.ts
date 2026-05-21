@@ -19,9 +19,11 @@ export class PostDTO implements PostInterface {
 
     readonly image: any;
 
-    constructor(data: PostInterface) {
-        this.title = data.title;
-        this.describe = data.describe;
-        this.image = data.image;
+    constructor(data?: PostInterface) {
+        if (data) {
+            this.title = data.title;
+            this.describe = data.describe;
+            this.image = data.image;
+        }
     }
 }
