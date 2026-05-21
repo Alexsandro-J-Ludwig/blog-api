@@ -1,10 +1,19 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
-import { User } from 'src/user/user.entity.js';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
+import type { Relation } from 'typeorm';
+
+import { User } from '../user/user.entity.js';
 
 @Entity('posts')
 export class Post {
   @PrimaryGeneratedColumn('uuid')
-  uuid: string; 
+  uuid: string;
 
   @Column()
   title: string;
@@ -12,19 +21,19 @@ export class Post {
   @Column({ type: 'text' })
   describe: string;
 
-  @Column({ type: 'image'})
+  @Column()
   image: string;
 
   @ManyToOne(() => User, (user) => user.posts)
-  owner: User;
+  owner: Relation<User>;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   date: Date;
 
   @Column({ type: 'int', default: 0 })
-  likes: number; 
+  likes: number;
 
   @ManyToMany(() => User)
-  @JoinTable({ name: 'post_likes'})
-  likedBy: User[];
+  @JoinTable({ name: 'post_likes' })
+  likedBy: Relation<User[]>;
 }

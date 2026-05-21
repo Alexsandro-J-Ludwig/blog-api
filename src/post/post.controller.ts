@@ -1,66 +1,80 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
-import { PostService } from "./post.service.js";
-import { AuthGuard } from "src/user/auth.guard.js";
-import { PostDTO } from "./Post.dto.js";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { PostService } from './post.service.js';
+import { AuthGuard } from '../user/auth.guard.js';
+import { PostDTO } from './Post.dto.js';
 
 @Controller('post')
 export class PostController {
-    provider: PostService;
-    constructor(private readonly postService: PostService) { }
+  provider: PostService;
+  constructor(private readonly postService: PostService) {}
 
-    @UseGuards(AuthGuard)
-    @Post("/create")
-    async createPost(@Body() postDto: PostDTO, @Req() req: any) {
-        const uuid = req.user.uuid;
+  @UseGuards(AuthGuard)
+  @Post('/create')
+  async createPost(@Body() postDto: PostDTO, @Req() req: any) {
+    const uuid = req.user.uuid;
 
-        const response = await this.postService.createPost(postDto, uuid);
+    const response = await this.postService.createPost(postDto, uuid);
 
-        return response;
-    }
+    return response;
+  }
 
-    @UseGuards(AuthGuard)
-    @Get("/getByUser")
-    async getByUser(@Req() req: any) {
-        const uuid = req.user.uuid
+  @UseGuards(AuthGuard)
+  @Get('/getByUser')
+  async getByUser(@Req() req: any) {
+    const uuid = req.user.uuid;
 
-        const response = await this.postService.getPostByUser(uuid);
-        return response;
-    }
+    const response = await this.postService.getPostByUser(uuid);
+    return response;
+  }
 
-    @Get("/getAll")
-    async getAll() {
-        const response = await this.postService.getAllPosts();
-        return response
-    }
+  @Get('/getAll')
+  async getAll() {
+    const response = await this.postService.getAllPosts();
+    return response;
+  }
 
-    @Get("/postUser:username")
-    async getPostUser(@Param('username') username: string) {
-        const response = await this.postService.getPostByUser(username);
-        return response;
-    }
+  @Get('/postUser:username')
+  async getPostUser(@Param('username') username: string) {
+    const response = await this.postService.getPostByUser(username);
+    return response;
+  }
 
-    @UseGuards(AuthGuard)
-    @Put("/alterPost:uuidPost")
-    async updatePost(@Body() body: any, @Param('uuidPost') uuidPost: any, @Req() req: any) {
-        const uuid = req.user.uuid;
+  @UseGuards(AuthGuard)
+  @Put('/alterPost:uuidPost')
+  async updatePost(
+    @Body() body: any,
+    @Param('uuidPost') uuidPost: any,
+    @Req() req: any,
+  ) {
+    const uuid = req.user.uuid;
 
-        const response = await this.postService.updatePost(body, uuidPost, uuid);
-        return response;
-    }
+    const response = await this.postService.updatePost(body, uuidPost, uuid);
+    return response;
+  }
 
-    @UseGuards(AuthGuard)
-    @Post('/:postUuid/like')
-    async likePost(@Param('postUuid') postUuid: string, @Req() req: any) {
-        const uuid = req.user.uuid;
+  @UseGuards(AuthGuard)
+  @Post('/:postUuid/like')
+  async likePost(@Param('postUuid') postUuid: string, @Req() req: any) {
+    const uuid = req.user.uuid;
 
-        const response = await this.postService.likePost(postUuid, uuid);
-        return response;
-    }
+    const response = await this.postService.likePost(postUuid, uuid);
+    return response;
+  }
 
-    @UseGuards(AuthGuard)
-    @Delete('/:postUuid')
-    async deletePost(@Param('postUuid') postUuid: string) {
-        const response = await this.postService.deletePost(postUuid);
-        return response;
-    }
+  @UseGuards(AuthGuard)
+  @Delete('/:postUuid')
+  async deletePost(@Param('postUuid') postUuid: string) {
+    const response = await this.postService.deletePost(postUuid);
+    return response;
+  }
 }
