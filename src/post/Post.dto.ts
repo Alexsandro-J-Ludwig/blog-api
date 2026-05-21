@@ -1,4 +1,4 @@
-import { IsNotEmpty, MaxLength, Min, MinLength } from "class-validator";
+import { IsNotEmpty, MaxLength, Min, MinLength, IsOptional } from "class-validator";
 
 interface PostInterface {
     title: string,
@@ -17,6 +17,7 @@ export class PostDTO implements PostInterface {
     @MaxLength(500, { message: "Description is too long. Your're not Shakespeare!"})
     readonly describe: string;
 
+    @IsOptional()
     readonly image: any;
 
     constructor(data?: PostInterface) {
