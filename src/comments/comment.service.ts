@@ -55,4 +55,37 @@ export class CommentService {
 
         return comments;
     }
+
+    async updateComment(commentUUID: string, data: any) {
+        const alterations: any = {};
+        const messageAlterations: string[] = [];
+
+        const comment = await this.commentRepository.findOne({ where: { uuid: commentUUID } });
+        if (!comment) {
+            throw new HttpException('Comment not found', 404);
+        }
+
+        const update = {
+            content: (data.content) ? data.content : comment.content,
+            image: (data.image) ? data.image : comment.image,
+        }
+
+        for (const key of Object.keys(update)) {
+            if (update[key] !== comment[key]) {
+                alterations[key] = update[key];
+                messageAlterations.push(key);
+            }
+        }
+
+        if (messageAlterations.length === 0) {
+            throw new HttpException('No valid fields to update', 400);
+        }
+
+        await this.commentRepository.update({ uuid: commentUUID }, alterations);
+
+        return {
+            message: "Comment updated successfully",
+            updatedFields: messageAlterations
+        };
+    }
 }
