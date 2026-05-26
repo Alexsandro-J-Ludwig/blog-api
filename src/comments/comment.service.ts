@@ -29,30 +29,59 @@ export class CommentService {
     }
 
     async getCommentsByUser(userUUID: string) {
-        const user = this.userService.find(userUUID);
-
-        if (!user) {
-            throw new HttpException('User not found', 404);
-        }
+        const user = await this.userService.find(userUUID);
 
         return await this.commentRepository.find({
             where: {
-                owner: !(await user).uuid,
-            }
-        })
+                owner: { uuid: user.uuid },
+            },
+            relations: ['owner']
+        });
     }
 
     async getAll(postUUID: string) {
         const comments = await this.commentRepository.find({
             where: {
-                post: !postUUID
-            }
-        })
+                post: { uuid: postUUID }
+            },
+            relations: ['owner']
+        });
 
         if (!comments || comments.length === 0) {
             throw new HttpException('Comments not found', 404);
         }
 
         return comments;
+    }
+
+    async updateComment(commentUUID: string, data: any) {
+        const comment = await this.commentRepository.findOne({ where: { uuid: commentUUID } });
+        if (!comment) {
+            throw new HttpException('Comment not found', 404);
+        }
+
+        const alterations: any = {};
+        const messageAlterations: string[] = [];
+
+        if (data.content !== undefined && data.content !== comment.content) {
+            alterations.content = data.content;
+            messageAlterations.push('content');
+        }
+
+        if (data.image !== undefined && data.image !== comment.image) {
+            alterations.image = data.image;
+            messageAlterations.push('image');
+        }
+
+        if (messageAlterations.length === 0) {
+            throw new HttpException('No valid fields to update', 400);
+        }
+
+        await this.commentRepository.update({ uuid: commentUUID }, alterations);
+
+        return {
+            message: "Comment updated successfully",
+            updatedFields: messageAlterations
+        };
     }
 }
