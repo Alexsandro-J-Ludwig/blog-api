@@ -29,23 +29,25 @@ export class CommentService {
     }
 
     async getCommentsByUser(userUUID: string) {
-        const user = await this.userService.find(userUUID);
+        const user = this.userService.find(userUUID);
+
+        if (!user) {
+            throw new HttpException('User not found', 404);
+        }
 
         return await this.commentRepository.find({
             where: {
-                owner: { uuid: user.uuid },
-            },
-            relations: ['owner']
-        });
+                owner: !(await user).uuid,
+            }
+        })
     }
 
     async getAll(postUUID: string) {
         const comments = await this.commentRepository.find({
             where: {
-                post: { uuid: postUUID }
-            },
-            relations: ['owner']
-        });
+                post: !postUUID
+            }
+        })
 
         if (!comments || comments.length === 0) {
             throw new HttpException('Comments not found', 404);
@@ -55,22 +57,24 @@ export class CommentService {
     }
 
     async updateComment(commentUUID: string, data: any) {
+        const alterations: any = {};
+        const messageAlterations: string[] = [];
+
         const comment = await this.commentRepository.findOne({ where: { uuid: commentUUID } });
         if (!comment) {
             throw new HttpException('Comment not found', 404);
         }
 
-        const alterations: any = {};
-        const messageAlterations: string[] = [];
-
-        if (data.content !== undefined && data.content !== comment.content) {
-            alterations.content = data.content;
-            messageAlterations.push('content');
+        const update = {
+            content: (data.content) ? data.content : comment.content,
+            image: (data.image) ? data.image : comment.image,
         }
 
-        if (data.image !== undefined && data.image !== comment.image) {
-            alterations.image = data.image;
-            messageAlterations.push('image');
+        for (const key of Object.keys(update)) {
+            if (update[key] !== comment[key]) {
+                alterations[key] = update[key];
+                messageAlterations.push(key);
+            }
         }
 
         if (messageAlterations.length === 0) {
