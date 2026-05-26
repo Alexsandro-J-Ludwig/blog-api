@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Comment } from "./comments.entity.js";
@@ -26,5 +26,19 @@ export class CommentService {
         });
 
         return await this.commentRepository.save(newComment);
+    }
+
+    async getCommentsByUser(userUUID: string) {
+        const user = this.userService.find(userUUID);
+
+        if (!user) {
+            throw new HttpException('User not found', 404);
+        }
+
+        return await this.commentRepository.find({
+            where: {
+                owner: !(await user).uuid,
+            }
+        })
     }
 }

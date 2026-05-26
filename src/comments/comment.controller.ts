@@ -1,9 +1,9 @@
-import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { CommentService } from "./comment.service.js";
 import { CommentDTO } from "./comment.dto.js";
 import { AuthGuard } from "../user/auth.guard.js";
 
-@Controller('comments')
+@Controller('/comments')
 export class CommentController {
     constructor(
         private readonly commentService: CommentService
@@ -15,5 +15,13 @@ export class CommentController {
         const uuid = req.user.uuid;
 
         return await this.commentService.createComment(comment, uuid);
+    }
+
+    @UseGuards(AuthGuard)
+    @Get('/user')
+    async getCommentsByUser(@Req() req: any) {
+        const uuid = req.user.uuid;
+
+        return await this.commentService.getCommentsByUser(uuid);
     }
 }
