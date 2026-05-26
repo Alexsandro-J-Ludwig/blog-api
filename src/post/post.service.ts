@@ -3,22 +3,21 @@ import { Post } from "./post.entity.js";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { PostDTO } from "./Post.dto.js";
-import { User } from "../user/user.entity.js";
+import { UserService } from "../user/user.service.js";
 
 @Injectable()
 export class PostService {
     constructor(
         @InjectRepository(Post)
         private readonly postRepository: Repository<Post>,
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>
+        private readonly userService: UserService
     ) { }
 
-    async createPost(data: PostDTO, userUuid: string) {
+    async createPost(data: PostDTO, userUUID: string) {
         try {
             const newPost = this.postRepository.create({
                 ...data,
-                owner: { uuid: userUuid }
+                owner: { uuid: userUUID }
             });
 
             await this.postRepository.save(newPost);
@@ -50,6 +49,14 @@ export class PostService {
         return posts;
     }
 
+    async find(uuid: string) {
+        const post = await this.postRepository.findOne({ where: { uuid } })
+        if (!post) {
+            throw new HttpException("Post not found", 404);
+        }
+        return post;
+    }
+
     async getAllPosts() {
         try {
             const posts = await this.postRepository.find({
@@ -67,31 +74,6 @@ export class PostService {
                 HttpStatus.INTERNAL_SERVER_ERROR
             );
         }
-    }
-
-    async getByUsername(username: string) {
-        const user = await this.userRepository.findOne({ where: { username } });
-
-        if (!user) {
-            throw new HttpException(
-                "User not find",
-                HttpStatus.NOT_FOUND
-            )
-        }
-
-        const posts = await this.postRepository.find({
-            where: {
-                owner: {
-                    uuid: user.uuid
-                }
-            },
-            relations: ['owner'],
-            order: {
-                date: "DESC"
-            }
-        })
-
-        return posts;
     }
 
     async updatePost(data: any, uuidPost: string, uuid: string) {
@@ -143,7 +125,8 @@ export class PostService {
             post.likedBy = post.likedBy.filter(user => user.uuid !== uuidUser);
             post.likes--;
         } else {
-            post.likedBy.push({ uuid: uuidUser } as User);
+            const user = await this.userService.find(uuidUser);
+            post.likedBy.push(user);
             post.likes++;
         }
 

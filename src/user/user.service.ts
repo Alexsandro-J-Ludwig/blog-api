@@ -47,6 +47,14 @@ export class UserService {
         return { message: "User authenticated successfully", token };
     }
 
+    async find(uuid: string) {
+        const user = await this.userRepository.findOne({ where: { uuid: uuid } });
+        if (!user) {
+            throw new HttpException('User not found', 404);
+        }
+        return user;
+    }
+
     async updateUser(uuid: string, data: any) {
         const alterations = {};
         const messageAlterations: string[] = [];
@@ -92,14 +100,14 @@ export class UserService {
     }
 
     async deleteUser(uuid: string) {
-        const userCheck = await this.userRepository.findOne({ where: { uuid }});
+        const userCheck = await this.userRepository.findOne({ where: { uuid } });
 
         if (!userCheck) {
             throw new HttpException("User not found", 404);
         }
 
-        await this.userRepository.delete({uuid});
+        await this.userRepository.delete({ uuid });
 
-        return { menssage: "User deleted with sucessful"};
+        return { menssage: "User deleted with sucessful" };
     }
 }

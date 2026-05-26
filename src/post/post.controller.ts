@@ -16,7 +16,7 @@ import { PostDTO } from './Post.dto.js';
 @Controller('post')
 export class PostController {
   provider: PostService;
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService) { }
 
   @UseGuards(AuthGuard)
   @Post('/create')
@@ -40,12 +40,6 @@ export class PostController {
   @Get('/getAll')
   async getAll() {
     const response = await this.postService.getAllPosts();
-    return response;
-  }
-
-  @Get('/postUser:username')
-  async getPostUser(@Param('username') username: string) {
-    const response = await this.postService.getByUsername(username);
     return response;
   }
 
