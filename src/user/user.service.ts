@@ -2,7 +2,7 @@ import { HttpException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity.js";
 import { Repository } from "typeorm";
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
@@ -45,14 +45,6 @@ export class UserService {
         const token = await this.jwtService.signAsync(jwtPayload, { expiresIn: '3d', secret: process.env.JWT_SECRET });
 
         return { message: "User authenticated successfully", token };
-    }
-
-    async find(uuid: string) {
-        const user = await this.userRepository.findOne({ where: { uuid: uuid } });
-        if (!user) {
-            throw new HttpException('User not found', 404);
-        }
-        return user;
     }
 
     async updateUser(uuid: string, data: any) {
@@ -100,14 +92,14 @@ export class UserService {
     }
 
     async deleteUser(uuid: string) {
-        const userCheck = await this.userRepository.findOne({ where: { uuid } });
+        const userCheck = await this.userRepository.findOne({ where: { uuid }});
 
         if (!userCheck) {
             throw new HttpException("User not found", 404);
         }
 
-        await this.userRepository.delete({ uuid });
+        await this.userRepository.delete({uuid});
 
-        return { menssage: "User deleted with sucessful" };
+        return { menssage: "User deleted with sucessful"};
     }
 }
