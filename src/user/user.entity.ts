@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToMany } from 'typeorm';
 import type { Relation } from 'typeorm';
 import { Post } from '../post/post.entity.js';
+import { Comment } from '../comments/comments.entity.js';
 
 @Entity('users')
 export class User {
@@ -25,4 +26,7 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.owner)
   posts: Relation<Post[]>;
+
+  @OneToMany(() => Comment, (comment) => comment.owner)
+  comments: Relation<Comment[]>;
 }
