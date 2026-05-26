@@ -2,7 +2,7 @@ import { HttpException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./user.entity.js";
 import { Repository } from "typeorm";
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
