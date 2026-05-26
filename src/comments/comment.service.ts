@@ -88,4 +88,24 @@ export class CommentService {
             updatedFields: messageAlterations
         };
     }
+
+    async likeComment(commentUUID: string, userUUID: string) {
+        const comment = await this.commentRepository.findOne({ where: { uuid: commentUUID } });
+        if (!comment) {
+            throw new HttpException('Comment not found', 404);
+        }
+
+        const alreadyLiked = comment.likedBy.some(user => user.uuid === userUUID);
+
+        if (alreadyLiked) {
+            comment.likedBy = comment.likedBy.filter(user => user.uuid !== userUUID);
+            comment.likes--;
+        } else {
+            const user = await this.userService.find(userUUID);
+            comment.likedBy.push(user);
+            comment.likes++;
+        }
+
+        return await this.commentRepository.save(comment);
+    }
 }

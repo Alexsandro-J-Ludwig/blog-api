@@ -35,4 +35,11 @@ export class CommentController {
     async updateComment(@Param('uuid') uuid: string, @Body() data: any, @Req() req: any) {
         return await this.commentService.updateComment(uuid, data);
     }
+
+    @UseGuards(AuthGuard)
+    @Post('/like/:uuid')
+    async likeComment(@Param('uuid') commentUUID: string, @Req() req: any) {
+        const userUUID = req.user.uuid;
+        return await this.commentService.likeComment(commentUUID, userUUID);
+    }
 }
