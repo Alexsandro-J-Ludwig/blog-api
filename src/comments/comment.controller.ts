@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from "@nestjs/common";
 import { CommentService } from "./comment.service.js";
 import { CommentDTO } from "./comment.dto.js";
 import { AuthGuard } from "../user/auth.guard.js";
@@ -41,5 +41,11 @@ export class CommentController {
     async likeComment(@Param('uuid') commentUUID: string, @Req() req: any) {
         const userUUID = req.user.uuid;
         return await this.commentService.likeComment(commentUUID, userUUID);
+    }
+
+    @UseGuards(AuthGuard)
+    @Delete('/:uuid')
+    async deleteComment(@Param('uuid') uuid: string) {
+        return await this.commentService.deleteComment(uuid);
     }
 }

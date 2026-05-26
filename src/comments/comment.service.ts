@@ -108,4 +108,17 @@ export class CommentService {
 
         return await this.commentRepository.save(comment);
     }
+
+    async deleteComment(uuid: string) {
+        const comment = await this.commentRepository.findOne({ where: { uuid: uuid } });
+        if (!comment) {
+            throw new HttpException('Comment not found', 404);
+        }
+
+        await this.commentRepository.delete({ uuid });
+
+        return {
+            message: "Comment deleted successfully"
+        };
+    }
 }
