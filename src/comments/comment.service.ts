@@ -41,4 +41,18 @@ export class CommentService {
             }
         })
     }
+
+    async getAll(postUUID: string) {
+        const comments = await this.commentRepository.find({
+            where: {
+                post: !postUUID
+            }
+        })
+
+        if (!comments || comments.length === 0) {
+            throw new HttpException('Comments not found', 404);
+        }
+
+        return comments;
+    }
 }
