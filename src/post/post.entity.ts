@@ -5,12 +5,10 @@ import {
   ManyToOne,
   ManyToMany,
   JoinTable,
-  OneToMany,
 } from 'typeorm';
 import type { Relation } from 'typeorm';
 
 import { User } from '../user/user.entity.js';
-import { Comment } from '../comments/comments.entity.js';
 
 @Entity('posts')
 export class Post {
@@ -38,7 +36,4 @@ export class Post {
   @ManyToMany(() => User)
   @JoinTable({ name: 'post_likes' })
   likedBy: Relation<User[]>;
-
-  @OneToMany(() => Comment, (comment) => comment.post)
-  comments: Relation<Comment[]>;
 }
